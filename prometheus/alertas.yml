@@ -1,0 +1,32 @@
+groups:
+  - name: ai_service
+    rules:
+      - alert: AiServiceFora
+        expr: up{job="ai_service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ai_service não responde ao scrape do Prometheus"
+
+      - alert: AnomaliaDeLogDetectada
+        expr: ai_log_window_anomalous == 1
+        labels:
+          severity: warning
+        annotations:
+          summary: "Isolation Forest marcou a última janela de 1 min como anômala"
+          description: "score {{ $value }} acima do limiar do modelo"
+
+      - alert: IncidenteConfirmado
+        expr: increase(ai_log_incidents_total[10m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "Incidente confirmado pelo ai_service: {{ $labels.tipo }}"
+
+      - alert: PossivelForcaBruta
+        expr: sum(rate(ai_log_failed_logins_total{origem="externa"}[2m])) * 60 > 20
+        labels:
+          severity: critical
+        annotations:
+          summary: "Mais de 20 falhas de login/min vindas de IPs externos"

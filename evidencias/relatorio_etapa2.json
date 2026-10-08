@@ -1,0 +1,648 @@
+{
+  "gerado_em": "2026-10-07T22:17:18",
+  "arquivo": "/data/app.log",
+  "linhas": 1000000,
+  "malformadas": 0,
+  "periodo": [
+    "2024-11-04 00:00:03",
+    "2024-11-10 23:59:57"
+  ],
+  "niveis": {
+    "INFO": 614040,
+    "DEBUG": 308333,
+    "WARN": 61614,
+    "ERROR": 16013
+  },
+  "modelo": {
+    "arquivo": "/model/anomaly_model.pkl",
+    "versao": "2.4",
+    "treinado_agora": false,
+    "treinado_em": "2026-10-07T22:16:25",
+    "categorias": [
+      "cache / key / miss",
+      "status / request / api",
+      "accessed / user / admin",
+      "unhandled / keyerror / exception",
+      "pool / connection / use",
+      "slow / response / api",
+      "query / executed / reset",
+      "logged / user / admin",
+      "scheduled / job / completed",
+      "attempt / login / failed",
+      "rows / exported / report"
+    ]
+  },
+  "categorias": {
+    "logged / user / admin": 239036,
+    "query / executed / reset": 219815,
+    "accessed / user / admin": 198395,
+    "status / request / api": 143251,
+    "cache / key / miss": 69108,
+    "pool / connection / use": 39407,
+    "attempt / login / failed": 28988,
+    "slow / response / api": 22480,
+    "scheduled / job / completed": 21426,
+    "rows / exported / report": 15610,
+    "unhandled / keyerror / exception": 2484
+  },
+  "incidentes": [
+    {
+      "inicio": "2024-11-04T10:12:00",
+      "fim": "2024-11-04T10:23:00",
+      "minutos_anomalos": 11,
+      "score": 0.7490889926391007,
+      "linhas": 2650,
+      "erros": 595,
+      "p95_latencia": 93.0,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.20.70",
+      "rows_exportadas": 100156,
+      "usuario_exportador": "admin",
+      "acoes_privilegiadas": 20,
+      "fora_horario": false,
+      "excesso": [
+        {
+          "template": "Failed to connect to database",
+          "observado": 377,
+          "esperado": 13.94,
+          "lift": 27.1,
+          "surpresa": 300.0
+        },
+        {
+          "template": "Query failed: connection reset by peer",
+          "observado": 117,
+          "esperado": 0.69,
+          "lift": 169.3,
+          "surpresa": 211.7
+        },
+        {
+          "template": "Request GET /api/invoices failed with status <NUM>",
+          "observado": 16,
+          "esperado": 2.21,
+          "lift": 7.2,
+          "surpresa": 8.7
+        }
+      ],
+      "tipo": "queda_banco",
+      "hipotese": "Indisponibilidade do banco de dados",
+      "recomendacao": "Verificar saúde do banco/rede, failover para réplica e circuit breaker nas APIs"
+    },
+    {
+      "inicio": "2024-11-04T15:40:00",
+      "fim": "2024-11-04T16:10:00",
+      "minutos_anomalos": 30,
+      "score": 0.7278127467269532,
+      "linhas": 7142,
+      "erros": 75,
+      "p95_latencia": 735.3000000000002,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.3.61",
+      "rows_exportadas": 231087,
+      "usuario_exportador": "carla.gomes",
+      "acoes_privilegiadas": 35,
+      "fora_horario": false,
+      "excesso": [
+        {
+          "template": "Slow response on /api/search: <NUM>ms",
+          "observado": 103,
+          "esperado": 25.45,
+          "lift": 4.0,
+          "surpresa": 30.1
+        },
+        {
+          "template": "Slow response on /api/users: <NUM>ms",
+          "observado": 96,
+          "esperado": 26.15,
+          "lift": 3.7,
+          "surpresa": 25.1
+        },
+        {
+          "template": "Slow response on /api/customers: <NUM>ms",
+          "observado": 95,
+          "esperado": 25.95,
+          "lift": 3.7,
+          "surpresa": 24.8
+        }
+      ],
+      "tipo": "degradacao_latencia",
+      "hipotese": "Degradação de performance (latência muito acima do normal)",
+      "recomendacao": "Checar plano de execução das queries, CPU/IO do banco e deploys recentes"
+    },
+    {
+      "inicio": "2024-11-05T02:47:00",
+      "fim": "2024-11-05T02:55:00",
+      "minutos_anomalos": 8,
+      "score": 0.7699658724295686,
+      "linhas": 751,
+      "erros": 2,
+      "p95_latencia": 75.0,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 66,
+      "ip_suspeito": "185.220.101.47",
+      "rows_exportadas": 18660,
+      "usuario_exportador": "lucas.oliveira",
+      "acoes_privilegiadas": 284,
+      "fora_horario": true,
+      "excesso": [
+        {
+          "template": "Failed login attempt for user admin from <IP>",
+          "observado": 100,
+          "esperado": 0.25,
+          "lift": 393.6,
+          "surpresa": 217.6
+        },
+        {
+          "template": "Failed login attempt for user root from <IP>",
+          "observado": 92,
+          "esperado": 0.15,
+          "lift": 600.6,
+          "surpresa": 217.1
+        },
+        {
+          "template": "Failed login attempt for user administrator from <IP>",
+          "observado": 91,
+          "esperado": 0.17,
+          "lift": 537.2,
+          "surpresa": 210.4
+        }
+      ],
+      "tipo": "forca_bruta",
+      "hipotese": "Força bruta de login a partir de um único IP",
+      "recomendacao": "Bloquear o IP no WAF, exigir MFA e revisar a sessão aberta após as tentativas"
+    },
+    {
+      "inicio": "2024-11-05T14:05:00",
+      "fim": "2024-11-05T14:22:00",
+      "minutos_anomalos": 15,
+      "score": 0.7468488190037585,
+      "linhas": 3853,
+      "erros": 250,
+      "p95_latencia": 93.0,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.4.169",
+      "rows_exportadas": 165785,
+      "usuario_exportador": "karina.mendes",
+      "acoes_privilegiadas": 13,
+      "fora_horario": false,
+      "excesso": [
+        {
+          "template": "Connection pool running low (<NUM>/<NUM> in use)",
+          "observado": 241,
+          "esperado": 2.2,
+          "lift": 109.8,
+          "surpresa": 300.0
+        },
+        {
+          "template": "Connection pool exhausted (<NUM>/<NUM> in use), request queued",
+          "observado": 111,
+          "esperado": 1.15,
+          "lift": 96.5,
+          "surpresa": 174.0
+        },
+        {
+          "template": "Timeout waiting for connection from pool after <NUM>ms",
+          "observado": 84,
+          "esperado": 0.77,
+          "lift": 108.7,
+          "surpresa": 136.3
+        }
+      ],
+      "tipo": "esgotamento_pool",
+      "hipotese": "Esgotamento do pool de conexões com o banco",
+      "recomendacao": "Aumentar o pool / investigar conexões presas e queries longas; aplicar backpressure"
+    },
+    {
+      "inicio": "2024-11-06T03:15:00",
+      "fim": "2024-11-06T03:19:00",
+      "minutos_anomalos": 4,
+      "score": 0.6173554733148158,
+      "linhas": 137,
+      "erros": 1,
+      "p95_latencia": 86.74999999999997,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.18.142",
+      "rows_exportadas": 1256869,
+      "usuario_exportador": "admin",
+      "acoes_privilegiadas": 6,
+      "fora_horario": true,
+      "excesso": [
+        {
+          "template": "Permission changed: user <USER> granted role admin by admin",
+          "observado": 1,
+          "esperado": 0.0,
+          "lift": 1785.7,
+          "surpresa": 3.3
+        },
+        {
+          "template": "User admin accessed user-management",
+          "observado": 1,
+          "esperado": 0.0,
+          "lift": 1785.7,
+          "surpresa": 3.3
+        },
+        {
+          "template": "User admin exported table customers (<NUM> rows)",
+          "observado": 1,
+          "esperado": 0.0,
+          "lift": 1785.7,
+          "surpresa": 3.3
+        }
+      ],
+      "tipo": "admin_fora_horario",
+      "hipotese": "Ação administrativa sensível fora do horário comercial",
+      "recomendacao": "Confirmar com o dono da conta admin, revogar permissões concedidas e auditar a exportação"
+    },
+    {
+      "inicio": "2024-11-06T11:30:00",
+      "fim": "2024-11-06T11:44:00",
+      "minutos_anomalos": 6,
+      "score": 0.5953516130842667,
+      "linhas": 3002,
+      "erros": 37,
+      "p95_latencia": 91.0,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.16.253",
+      "rows_exportadas": 226007869,
+      "usuario_exportador": "carla.mendes",
+      "acoes_privilegiadas": 19,
+      "fora_horario": false,
+      "excesso": [
+        {
+          "template": "Report rpt-<NUM> exported by user <USER> (<NUM> rows)",
+          "observado": 401,
+          "esperado": 60.24,
+          "lift": 6.7,
+          "surpresa": 183.8
+        }
+      ],
+      "tipo": "exfiltracao",
+      "hipotese": "Exportação em massa de dados por um único usuário",
+      "recomendacao": "Suspender o usuário, avaliar vazamento (LGPD) e impor limite de linhas por exportação"
+    },
+    {
+      "inicio": "2024-11-07T09:15:00",
+      "fim": "2024-11-07T09:23:00",
+      "minutos_anomalos": 8,
+      "score": 0.7192728154522409,
+      "linhas": 1984,
+      "erros": 18,
+      "p95_latencia": 90.79999999999995,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 68,
+      "ip_suspeito": "45.155.205.233",
+      "rows_exportadas": 64647,
+      "usuario_exportador": "tatiana.souza",
+      "acoes_privilegiadas": 277,
+      "fora_horario": false,
+      "excesso": [
+        {
+          "template": "Failed login attempt for user administrator from <IP>",
+          "observado": 97,
+          "esperado": 0.51,
+          "lift": 189.4,
+          "surpresa": 180.4
+        },
+        {
+          "template": "Failed login attempt for user admin from <IP>",
+          "observado": 89,
+          "esperado": 0.77,
+          "lift": 115.9,
+          "surpresa": 146.7
+        },
+        {
+          "template": "Failed login attempt for user root from <IP>",
+          "observado": 78,
+          "esperado": 0.46,
+          "lift": 168.4,
+          "surpresa": 141.3
+        }
+      ],
+      "tipo": "forca_bruta",
+      "hipotese": "Força bruta de login a partir de um único IP",
+      "recomendacao": "Bloquear o IP no WAF, exigir MFA e revisar a sessão aberta após as tentativas"
+    },
+    {
+      "inicio": "2024-11-07T20:35:00",
+      "fim": "2024-11-07T20:50:00",
+      "minutos_anomalos": 15,
+      "score": 0.7246205396246481,
+      "linhas": 2424,
+      "erros": 22,
+      "p95_latencia": 747.0,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.9.172",
+      "rows_exportadas": 74973,
+      "usuario_exportador": "marina.souza",
+      "acoes_privilegiadas": 0,
+      "fora_horario": false,
+      "excesso": [
+        {
+          "template": "Slow response on /api/products: <NUM>ms",
+          "observado": 51,
+          "esperado": 9.32,
+          "lift": 5.5,
+          "surpresa": 20.7
+        },
+        {
+          "template": "Slow response on /api/payments: <NUM>ms",
+          "observado": 47,
+          "esperado": 9.25,
+          "lift": 5.1,
+          "surpresa": 17.9
+        },
+        {
+          "template": "Slow response on /api/orders: <NUM>ms",
+          "observado": 46,
+          "esperado": 9.34,
+          "lift": 4.9,
+          "surpresa": 17.1
+        }
+      ],
+      "tipo": "degradacao_latencia",
+      "hipotese": "Degradação de performance (latência muito acima do normal)",
+      "recomendacao": "Checar plano de execução das queries, CPU/IO do banco e deploys recentes"
+    },
+    {
+      "inicio": "2024-11-08T10:01:00",
+      "fim": "2024-11-08T10:09:00",
+      "minutos_anomalos": 8,
+      "score": 0.7110659314491896,
+      "linhas": 2006,
+      "erros": 455,
+      "p95_latencia": 97.0,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 2,
+      "ip_suspeito": "10.0.19.72",
+      "rows_exportadas": 87488,
+      "usuario_exportador": "tatiana.souza",
+      "acoes_privilegiadas": 10,
+      "fora_horario": false,
+      "excesso": [
+        {
+          "template": "Failed to connect to database",
+          "observado": 298,
+          "esperado": 11.48,
+          "lift": 26.0,
+          "surpresa": 298.6
+        },
+        {
+          "template": "Query failed: connection reset by peer",
+          "observado": 86,
+          "esperado": 0.57,
+          "lift": 151.0,
+          "surpresa": 151.7
+        },
+        {
+          "template": "Request GET /api/orders failed with status <NUM>",
+          "observado": 13,
+          "esperado": 1.58,
+          "lift": 8.2,
+          "surpresa": 7.8
+        }
+      ],
+      "tipo": "queda_banco",
+      "hipotese": "Indisponibilidade do banco de dados",
+      "recomendacao": "Verificar saúde do banco/rede, failover para réplica e circuit breaker nas APIs"
+    },
+    {
+      "inicio": "2024-11-09T01:41:00",
+      "fim": "2024-11-09T01:45:00",
+      "minutos_anomalos": 4,
+      "score": 0.6524544976256468,
+      "linhas": 54,
+      "erros": 1,
+      "p95_latencia": 87.79999999999997,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.4.141",
+      "rows_exportadas": 1252605,
+      "usuario_exportador": "admin",
+      "acoes_privilegiadas": 7,
+      "fora_horario": true,
+      "excesso": [
+        {
+          "template": "Permission changed: user <USER> granted role admin by admin",
+          "observado": 1,
+          "esperado": 0.0,
+          "lift": 4098.4,
+          "surpresa": 3.6
+        },
+        {
+          "template": "User admin accessed user-management",
+          "observado": 1,
+          "esperado": 0.0,
+          "lift": 4098.4,
+          "surpresa": 3.6
+        },
+        {
+          "template": "User admin exported table customers (<NUM> rows)",
+          "observado": 1,
+          "esperado": 0.0,
+          "lift": 4098.4,
+          "surpresa": 3.6
+        }
+      ],
+      "tipo": "admin_fora_horario",
+      "hipotese": "Ação administrativa sensível fora do horário comercial",
+      "recomendacao": "Confirmar com o dono da conta admin, revogar permissões concedidas e auditar a exportação"
+    },
+    {
+      "inicio": "2024-11-09T16:10:00",
+      "fim": "2024-11-09T16:28:00",
+      "minutos_anomalos": 18,
+      "score": 0.7037997734568486,
+      "linhas": 1914,
+      "erros": 258,
+      "p95_latencia": 102.89999999999998,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.19.17",
+      "rows_exportadas": 80686,
+      "usuario_exportador": "marina.rocha",
+      "acoes_privilegiadas": 0,
+      "fora_horario": true,
+      "excesso": [
+        {
+          "template": "Connection pool running low (<NUM>/<NUM> in use)",
+          "observado": 242,
+          "esperado": 1.08,
+          "lift": 223.4,
+          "surpresa": 300.0
+        },
+        {
+          "template": "Connection pool exhausted (<NUM>/<NUM> in use), request queued",
+          "observado": 142,
+          "esperado": 0.57,
+          "lift": 250.2,
+          "surpresa": 280.6
+        },
+        {
+          "template": "Timeout waiting for connection from pool after <NUM>ms",
+          "observado": 86,
+          "esperado": 0.38,
+          "lift": 225.5,
+          "surpresa": 166.6
+        }
+      ],
+      "tipo": "esgotamento_pool",
+      "hipotese": "Esgotamento do pool de conexões com o banco",
+      "recomendacao": "Aumentar o pool / investigar conexões presas e queries longas; aplicar backpressure"
+    },
+    {
+      "inicio": "2024-11-10T22:05:00",
+      "fim": "2024-11-10T22:20:00",
+      "minutos_anomalos": 15,
+      "score": 0.6963003295346076,
+      "linhas": 861,
+      "erros": 7,
+      "p95_latencia": 85.04999999999998,
+      "p95_ref": 97.0,
+      "falhas_mesmo_ip": 1,
+      "ip_suspeito": "10.0.5.93",
+      "rows_exportadas": 250156640,
+      "usuario_exportador": "vitor.rocha",
+      "acoes_privilegiadas": 0,
+      "fora_horario": true,
+      "excesso": [
+        {
+          "template": "Report rpt-<NUM> exported by user <USER> (<NUM> rows)",
+          "observado": 400,
+          "esperado": 15.28,
+          "lift": 26.2,
+          "surpresa": 300.0
+        }
+      ],
+      "tipo": "exfiltracao",
+      "hipotese": "Exportação em massa de dados por um único usuário",
+      "recomendacao": "Suspender o usuário, avaliar vazamento (LGPD) e impor limite de linhas por exportação"
+    }
+  ],
+  "avaliacao": {
+    "linhas": [
+      {
+        "id": 1,
+        "tipo_real": "queda_banco",
+        "inicio": "11-04 10:12",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "queda_banco",
+        "tipo_correto": true
+      },
+      {
+        "id": 2,
+        "tipo_real": "degradacao_latencia",
+        "inicio": "11-04 15:40",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "degradacao_latencia",
+        "tipo_correto": true
+      },
+      {
+        "id": 3,
+        "tipo_real": "forca_bruta",
+        "inicio": "11-05 02:47",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "forca_bruta",
+        "tipo_correto": true
+      },
+      {
+        "id": 4,
+        "tipo_real": "esgotamento_pool",
+        "inicio": "11-05 14:05",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "esgotamento_pool",
+        "tipo_correto": true
+      },
+      {
+        "id": 5,
+        "tipo_real": "admin_fora_horario",
+        "inicio": "11-06 03:14",
+        "detectado": true,
+        "atraso_min": 1.0,
+        "tipo_previsto": "admin_fora_horario",
+        "tipo_correto": true
+      },
+      {
+        "id": 6,
+        "tipo_real": "exfiltracao",
+        "inicio": "11-06 11:30",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "exfiltracao",
+        "tipo_correto": true
+      },
+      {
+        "id": 7,
+        "tipo_real": "forca_bruta",
+        "inicio": "11-07 09:15",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "forca_bruta",
+        "tipo_correto": true
+      },
+      {
+        "id": 8,
+        "tipo_real": "degradacao_latencia",
+        "inicio": "11-07 20:35",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "degradacao_latencia",
+        "tipo_correto": true
+      },
+      {
+        "id": 9,
+        "tipo_real": "queda_banco",
+        "inicio": "11-08 10:01",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "queda_banco",
+        "tipo_correto": true
+      },
+      {
+        "id": 10,
+        "tipo_real": "admin_fora_horario",
+        "inicio": "11-09 01:40",
+        "detectado": true,
+        "atraso_min": 1.0,
+        "tipo_previsto": "admin_fora_horario",
+        "tipo_correto": true
+      },
+      {
+        "id": 11,
+        "tipo_real": "esgotamento_pool",
+        "inicio": "11-09 16:10",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "esgotamento_pool",
+        "tipo_correto": true
+      },
+      {
+        "id": 12,
+        "tipo_real": "exfiltracao",
+        "inicio": "11-10 22:05",
+        "detectado": true,
+        "atraso_min": 0.0,
+        "tipo_previsto": "exfiltracao",
+        "tipo_correto": true
+      }
+    ],
+    "recall": 1.0,
+    "precisao": 1.0,
+    "falsos_positivos": 0,
+    "tipo_correto": 12
+  },
+  "tempos_s": {
+    "leitura": 3.44,
+    "extracao_nlp": 7.23,
+    "carga_modelo": 0.24,
+    "deteccao": 17.2
+  }
+}

@@ -1,0 +1,9 @@
+apiVersion: 1
+
+providers:
+  - name: ai_service
+    folder: Observabilidade IA
+    type: file
+    allowUiUpdates: false
+    options:
+      path: /var/lib/grafana/dashboards

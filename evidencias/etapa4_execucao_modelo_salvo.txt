@@ -1,0 +1,192 @@
+ Container observabilidade-ia-db-1 Running 
+ Container observabilidade-ia-db-1 Waiting 
+ Container observabilidade-ia-db-1 Healthy 
+ Container observabilidade-ia-ai_service-run-434e3b60c868 Creating 
+ Container observabilidade-ia-ai_service-run-434e3b60c868 Created 
+log_analyzer.py | modelo v2.4 | scikit-learn 1.7.2 | 2026-10-07 22:16:48
+Arquivo: /data/app.log
+
+====================================================================================================
+ 1. RESUMO DO ARQUIVO
+====================================================================================================
+Linhas válidas: 1,000,000 | malformadas: 0 | período: 2024-11-04 00:00:03 -> 2024-11-10 23:59:57
+Níveis: INFO 614,040 (61.4%) | DEBUG 308,333 (30.8%) | WARN 61,614 (6.2%) | ERROR 16,013 (1.6%)
+Queries: 219,612 | mediana 35 ms | p95 97 ms | lentas (>100 ms) 4.5%
+Hora de pico: 10h (68,467 linhas) | maior taxa de erro: 10h (2.82%)
+Templates distintos (NLP): 82 a partir de 108,199 mensagens distintas
+
+====================================================================================================
+ 2. MODELO
+====================================================================================================
+CARREGADO de disco: /model/anomaly_model.pkl (v2.4, treinado em 2026-10-07T22:16:25, 1,000,000 linhas)
+NLP: TF-IDF + K-Means -> 11 categorias (silhueta 0.28)
+Isolation Forest por evento: 8 features, contamination=0.2%
+Isolation Forest por janela de 1 min: 10 features, contamination=1.5%, 10,080 janelas
+
+====================================================================================================
+ 3. CATEGORIAS DE EVENTO (NLP: TF-IDF + K-MEANS)
+====================================================================================================
+categoria (termos mais fortes)                   linhas       %  templates   % ERROR
+logged / user / admin                           239,036   23.9%          7      0.0%
+query / executed / reset                        219,815   22.0%          2      0.1%
+accessed / user / admin                         198,395   19.8%         15      0.0%
+status / request / api                          143,251   14.3%         14      3.0%
+cache / key / miss                               69,108    6.9%          8      0.0%
+pool / connection / use                          39,407    3.9%          5      1.1%
+attempt / login / failed                         28,988    2.9%          6     14.1%
+slow / response / api                            22,480    2.2%          7      0.0%
+scheduled / job / completed                      21,426    2.1%          8     21.2%
+rows / exported / report                         15,610    1.6%          3      0.0%
+unhandled / keyerror / exception                  2,484    0.2%          7    100.0%
+
+====================================================================================================
+ 4. INCIDENTES DETECTADOS (Isolation Forest por janela) - 12 incidentes
+====================================================================================================
+
+#01 Mon 04/11 10:12 -> 10:23 (11 min) | score 0.749 | 2,650 linhas, 595 ERROR
+    Hipótese: Indisponibilidade do banco de dados  [queda_banco]
+    Evidências: 595 ERROR em 2,650 linhas (22%)
+    + Failed to connect to database                                    377x (esperado 14, lift 27x)
+    + Query failed: connection reset by peer                           117x (esperado 1, lift 169x)
+    + Request GET /api/invoices failed with status <NUM>                16x (esperado 2, lift 7x)
+    Ação sugerida: Verificar saúde do banco/rede, failover para réplica e circuit breaker nas APIs
+
+#02 Mon 04/11 15:40 -> 16:10 (30 min) | score 0.728 | 7,142 linhas, 75 ERROR
+    Hipótese: Degradação de performance (latência muito acima do normal)  [degradacao_latencia]
+    Evidências: p95 das queries 735 ms (normal ~97 ms)
+    + Slow response on /api/search: <NUM>ms                            103x (esperado 25, lift 4x)
+    + Slow response on /api/users: <NUM>ms                              96x (esperado 26, lift 4x)
+    + Slow response on /api/customers: <NUM>ms                          95x (esperado 26, lift 4x)
+    Ação sugerida: Checar plano de execução das queries, CPU/IO do banco e deploys recentes
+
+#03 Tue 05/11 02:47 -> 02:55 (8 min) | score 0.770 | 751 linhas, 2 ERROR
+    Hipótese: Força bruta de login a partir de um único IP  [forca_bruta]
+    Evidências: IP 185.220.101.47 com até 66 falhas de login/min
+    + Failed login attempt for user admin from <IP>                    100x (esperado 0, lift 394x)
+    + Failed login attempt for user root from <IP>                      92x (esperado 0, lift 601x)
+    + Failed login attempt for user administrator from <IP>             91x (esperado 0, lift 537x)
+    Ação sugerida: Bloquear o IP no WAF, exigir MFA e revisar a sessão aberta após as tentativas
+
+#04 Tue 05/11 14:05 -> 14:22 (17 min) | score 0.747 | 3,853 linhas, 250 ERROR
+    Hipótese: Esgotamento do pool de conexões com o banco  [esgotamento_pool]
+    Evidências: 250 ERROR em 3,853 linhas (6%)
+    + Connection pool running low (<NUM>/<NUM> in use)                 241x (esperado 2, lift 110x)
+    + Connection pool exhausted (<NUM>/<NUM> in use), request queued   111x (esperado 1, lift 96x)
+    + Timeout waiting for connection from pool after <NUM>ms            84x (esperado 1, lift 109x)
+    Ação sugerida: Aumentar o pool / investigar conexões presas e queries longas; aplicar backpressure
+
+#05 Wed 06/11 03:15 -> 03:19 (4 min) | score 0.617 | 137 linhas, 1 ERROR
+    Hipótese: Ação administrativa sensível fora do horário comercial  [admin_fora_horario]
+    Evidências: 1,256,869 linhas exportadas (top: admin); 6 ações da conta admin às 03:15
+    + Permission changed: user <USER> granted role admin by admin        1x (esperado 0, lift 1786x)
+    + User admin accessed user-management                                1x (esperado 0, lift 1786x)
+    + User admin exported table customers (<NUM> rows)                   1x (esperado 0, lift 1786x)
+    Ação sugerida: Confirmar com o dono da conta admin, revogar permissões concedidas e auditar a exportação
+
+#06 Wed 06/11 11:30 -> 11:44 (14 min) | score 0.595 | 3,002 linhas, 37 ERROR
+    Hipótese: Exportação em massa de dados por um único usuário  [exfiltracao]
+    Evidências: 226,007,869 linhas exportadas (top: carla.mendes)
+    + Report rpt-<NUM> exported by user <USER> (<NUM> rows)            401x (esperado 60, lift 7x)
+    Ação sugerida: Suspender o usuário, avaliar vazamento (LGPD) e impor limite de linhas por exportação
+
+#07 Thu 07/11 09:15 -> 09:23 (8 min) | score 0.719 | 1,984 linhas, 18 ERROR
+    Hipótese: Força bruta de login a partir de um único IP  [forca_bruta]
+    Evidências: IP 45.155.205.233 com até 68 falhas de login/min
+    + Failed login attempt for user administrator from <IP>             97x (esperado 1, lift 189x)
+    + Failed login attempt for user admin from <IP>                     89x (esperado 1, lift 116x)
+    + Failed login attempt for user root from <IP>                      78x (esperado 0, lift 168x)
+    Ação sugerida: Bloquear o IP no WAF, exigir MFA e revisar a sessão aberta após as tentativas
+
+#08 Thu 07/11 20:35 -> 20:50 (15 min) | score 0.725 | 2,424 linhas, 22 ERROR
+    Hipótese: Degradação de performance (latência muito acima do normal)  [degradacao_latencia]
+    Evidências: p95 das queries 747 ms (normal ~97 ms)
+    + Slow response on /api/products: <NUM>ms                           51x (esperado 9, lift 6x)
+    + Slow response on /api/payments: <NUM>ms                           47x (esperado 9, lift 5x)
+    + Slow response on /api/orders: <NUM>ms                             46x (esperado 9, lift 5x)
+    Ação sugerida: Checar plano de execução das queries, CPU/IO do banco e deploys recentes
+
+#09 Fri 08/11 10:01 -> 10:09 (8 min) | score 0.711 | 2,006 linhas, 455 ERROR
+    Hipótese: Indisponibilidade do banco de dados  [queda_banco]
+    Evidências: 455 ERROR em 2,006 linhas (23%)
+    + Failed to connect to database                                    298x (esperado 11, lift 26x)
+    + Query failed: connection reset by peer                            86x (esperado 1, lift 151x)
+    + Request GET /api/orders failed with status <NUM>                  13x (esperado 2, lift 8x)
+    Ação sugerida: Verificar saúde do banco/rede, failover para réplica e circuit breaker nas APIs
+
+#10 Sat 09/11 01:41 -> 01:45 (4 min) | score 0.652 | 54 linhas, 1 ERROR
+    Hipótese: Ação administrativa sensível fora do horário comercial  [admin_fora_horario]
+    Evidências: 1,252,605 linhas exportadas (top: admin); 7 ações da conta admin às 01:41
+    + Permission changed: user <USER> granted role admin by admin        1x (esperado 0, lift 4098x)
+    + User admin accessed user-management                                1x (esperado 0, lift 4098x)
+    + User admin exported table customers (<NUM> rows)                   1x (esperado 0, lift 4098x)
+    Ação sugerida: Confirmar com o dono da conta admin, revogar permissões concedidas e auditar a exportação
+
+#11 Sat 09/11 16:10 -> 16:28 (18 min) | score 0.704 | 1,914 linhas, 258 ERROR
+    Hipótese: Esgotamento do pool de conexões com o banco  [esgotamento_pool]
+    Evidências: 258 ERROR em 1,914 linhas (13%)
+    + Connection pool running low (<NUM>/<NUM> in use)                 242x (esperado 1, lift 223x)
+    + Connection pool exhausted (<NUM>/<NUM> in use), request queued   142x (esperado 1, lift 250x)
+    + Timeout waiting for connection from pool after <NUM>ms            86x (esperado 0, lift 226x)
+    Ação sugerida: Aumentar o pool / investigar conexões presas e queries longas; aplicar backpressure
+
+#12 Sun 10/11 22:05 -> 22:20 (15 min) | score 0.696 | 861 linhas, 7 ERROR
+    Hipótese: Exportação em massa de dados por um único usuário  [exfiltracao]
+    Evidências: 250,156,640 linhas exportadas (top: vitor.rocha)
+    + Report rpt-<NUM> exported by user <USER> (<NUM> rows)            400x (esperado 15, lift 26x)
+    Ação sugerida: Suspender o usuário, avaliar vazamento (LGPD) e impor limite de linhas por exportação
+
+10 alerta(s) isolado(s) de 1 min sem template em excesso foram descartados como ruído (scores 0.572-0.624)
+
+====================================================================================================
+ 5. EVENTOS INDIVIDUAIS MAIS ANÔMALOS (Isolation Forest por evento)
+====================================================================================================
+1,951 eventos anômalos (0.20% das linhas); 198 dentro dos incidentes acima e 1,753 fora deles.
+Templates mais frequentes entre os anômalos FORA de incidentes (candidatos a investigação):
+   1,193x  Timeout while calling payment-gateway after <NUM>ms
+      55x  Request GET /api/payments failed with status <NUM>
+      53x  Request GET /api/orders failed with status <NUM>
+      50x  Request GET /api/customers failed with status <NUM>
+      49x  Request GET /api/search failed with status <NUM>
+
+Maiores scores (um exemplo por template):
+  0.745  2024-11-09 16:27:06  ERROR Timeout waiting for connection from pool after 30000ms
+  0.738  2024-11-04 00:58:09  ERROR Timeout while calling payment-gateway after 12249ms
+  0.730  2024-11-08 00:08:02  ERROR Unhandled exception in /api/orders: KeyError
+  0.730  2024-11-08 00:35:16  ERROR Unhandled exception in /api/customers: KeyError
+  0.730  2024-11-10 00:57:26  ERROR Unhandled exception in /api/payments: KeyError
+  0.730  2024-11-07 00:29:40  ERROR Unhandled exception in /api/products: KeyError
+  0.730  2024-11-04 00:19:19  ERROR Unhandled exception in /api/invoices: KeyError
+  0.730  2024-11-04 00:24:32  ERROR Unhandled exception in /api/search: KeyError
+
+====================================================================================================
+ 6. AVALIAÇÃO CONTRA O GABARITO (data/incidentes.json)
+====================================================================================================
+ id tipo real             início        detectado    atraso  tipo previsto         
+  1 queda_banco           11-04 10:12   SIM          +0 min  queda_banco OK        
+  2 degradacao_latencia   11-04 15:40   SIM          +0 min  degradacao_latencia OK
+  3 forca_bruta           11-05 02:47   SIM          +0 min  forca_bruta OK        
+  4 esgotamento_pool      11-05 14:05   SIM          +0 min  esgotamento_pool OK   
+  5 admin_fora_horario    11-06 03:14   SIM          +1 min  admin_fora_horario OK 
+  6 exfiltracao           11-06 11:30   SIM          +0 min  exfiltracao OK        
+  7 forca_bruta           11-07 09:15   SIM          +0 min  forca_bruta OK        
+  8 degradacao_latencia   11-07 20:35   SIM          +0 min  degradacao_latencia OK
+  9 queda_banco           11-08 10:01   SIM          +0 min  queda_banco OK        
+ 10 admin_fora_horario    11-09 01:40   SIM          +1 min  admin_fora_horario OK 
+ 11 esgotamento_pool      11-09 16:10   SIM          +0 min  esgotamento_pool OK   
+ 12 exfiltracao           11-10 22:05   SIM          +0 min  exfiltracao OK        
+
+Recall: 100% (12/12) | Precisão: 100% | falsos positivos: 0 | causa correta: 12/12
+
+====================================================================================================
+ 7. INSIGHTS
+====================================================================================================
+- Incidentes por causa: queda_banco (2), degradacao_latencia (2), forca_bruta (2), esgotamento_pool (2), admin_fora_horario (2), exfiltracao (2)
+- 11% dos ERROR do período ocorreram dentro de incidentes que somam 2.68% das linhas: priorizar alertas por janela, não por linha isolada
+- Erros recorrentes fora de incidentes (ruído de fundo): 'Timeout while calling payment-gateway after <NUM>ms' (4,445); 'Failed to connect to database' (3,362)
+- 6 incidentes são de SEGURANÇA e quase não geram ERROR (força bruta é WARN, exportação é INFO): monitorar só a severidade não os encontraria
+- IPs externos com falhas de login: 185.220.101.47 (461), 45.155.205.233 (460)
+- 4.5% das queries passam de 100 ms - o critério fixo 'slow_query > 100 ms' do código guiado marca milhares de eventos normais; o modelo por janela compara com o p95 típico
+
+Tempo: leitura 3.4s | extracao_nlp 7.2s | carga_modelo 0.2s | deteccao 17.2s | total 28.1s
+Relatório salvo em /output/relatorio.json
+12 incidente(s) gravado(s) no Postgres (ai_incidentes, origem=lote)

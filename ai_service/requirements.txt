@@ -1,0 +1,6 @@
+pandas==2.3.3
+numpy==2.3.4
+scikit-learn==1.7.2
+joblib==1.5.2
+prometheus-client==0.23.1
+psycopg[binary]==3.2.12

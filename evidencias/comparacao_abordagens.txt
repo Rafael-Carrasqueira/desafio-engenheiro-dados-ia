@@ -1,0 +1,22 @@
+ABORDAGEM GUIADA (Etapa 3): Isolation Forest por linha, features hora/nível/tamanho/slow_query
+  linhas marcadas como anômalas: 49,975 de 1,000,000 (5.0%)
+  marcadas que estão dentro de incidentes reais: 4,212 (8.4% das marcadas)
+  linhas de incidentes que foram marcadas: 4,212 de 26,963 (15.6%)
+  cobertura por incidente (linhas marcadas / linhas no intervalo):
+    #01 queda_banco              640/2650  (24%)
+    #02 degradacao_latencia     1113/7142  (16%)
+    #03 forca_bruta              491/751   (65%)
+    #04 esgotamento_pool         307/3853  (8%)
+    #05 admin_fora_horario        22/273   (8%)
+    #06 exfiltracao               94/3002  (3%)
+    #07 forca_bruta              150/1984  (8%)
+    #08 degradacao_latencia      575/2424  (24%)
+    #09 queda_banco              486/2006  (24%)
+    #10 admin_fora_horario        19/103   (18%)
+    #11 esgotamento_pool         281/1914  (15%)
+    #12 exfiltracao               34/861   (4%)
+  saída: uma linha por anomalia, sem horário completo, sem agrupamento nem causa
+
+LOG_ANALYZER.PY (Etapa 2): NLP + Isolation Forest por evento e por janela de 1 min
+  incidentes reportados: 12 | recall 100% | precisão 100% | causa correta 12/12
+  saída: incidentes com início/fim, templates em excesso, hipótese de causa e ação sugerida

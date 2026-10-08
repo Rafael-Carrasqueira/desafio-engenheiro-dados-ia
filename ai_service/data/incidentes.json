@@ -1,0 +1,107 @@
+{
+  "arquivo": "app.log",
+  "linhas": 1000000,
+  "seed": 42,
+  "periodo": [
+    "2024-11-04",
+    "2024-11-10"
+  ],
+  "incidentes": [
+    {
+      "id": 1,
+      "tipo": "queda_banco",
+      "descricao": "Rajada de falhas de conexão com o banco de dados",
+      "inicio": "2024-11-04 10:12:00",
+      "fim": "2024-11-04 10:23:00",
+      "linhas_injetadas": 568
+    },
+    {
+      "id": 2,
+      "tipo": "degradacao_latencia",
+      "descricao": "Degradação de latência: queries e APIs até 10x mais lentas",
+      "inicio": "2024-11-04 15:40:00",
+      "fim": "2024-11-04 16:10:00",
+      "linhas_injetadas": 1402
+    },
+    {
+      "id": 3,
+      "tipo": "forca_bruta",
+      "descricao": "Força bruta de login a partir de IP externo, terminando em login bem-sucedido",
+      "inicio": "2024-11-05 02:47:00",
+      "fim": "2024-11-05 02:55:00",
+      "linhas_injetadas": 462
+    },
+    {
+      "id": 4,
+      "tipo": "esgotamento_pool",
+      "descricao": "Esgotamento do pool de conexões com timeouts em cascata",
+      "inicio": "2024-11-05 14:05:00",
+      "fim": "2024-11-05 14:22:00",
+      "linhas_injetadas": 436
+    },
+    {
+      "id": 5,
+      "tipo": "admin_fora_horario",
+      "descricao": "Acesso administrativo de madrugada com alteração de permissões e exportação",
+      "inicio": "2024-11-06 03:14:00",
+      "fim": "2024-11-06 03:22:00",
+      "linhas_injetadas": 7
+    },
+    {
+      "id": 6,
+      "tipo": "exfiltracao",
+      "descricao": "Exportação em massa de relatórios por um único usuário",
+      "inicio": "2024-11-06 11:30:00",
+      "fim": "2024-11-06 11:44:00",
+      "linhas_injetadas": 350
+    },
+    {
+      "id": 7,
+      "tipo": "forca_bruta",
+      "descricao": "Força bruta de login a partir de IP externo, terminando em login bem-sucedido",
+      "inicio": "2024-11-07 09:15:00",
+      "fim": "2024-11-07 09:23:00",
+      "linhas_injetadas": 461
+    },
+    {
+      "id": 8,
+      "tipo": "degradacao_latencia",
+      "descricao": "Degradação de latência: queries e APIs até 10x mais lentas",
+      "inicio": "2024-11-07 20:35:00",
+      "fim": "2024-11-07 20:50:00",
+      "linhas_injetadas": 746
+    },
+    {
+      "id": 9,
+      "tipo": "queda_banco",
+      "descricao": "Rajada de falhas de conexão com o banco de dados",
+      "inicio": "2024-11-08 10:01:00",
+      "fim": "2024-11-08 10:09:00",
+      "linhas_injetadas": 429
+    },
+    {
+      "id": 10,
+      "tipo": "admin_fora_horario",
+      "descricao": "Acesso administrativo de madrugada com alteração de permissões e exportação",
+      "inicio": "2024-11-09 01:40:00",
+      "fim": "2024-11-09 01:47:00",
+      "linhas_injetadas": 7
+    },
+    {
+      "id": 11,
+      "tipo": "esgotamento_pool",
+      "descricao": "Esgotamento do pool de conexões com timeouts em cascata",
+      "inicio": "2024-11-09 16:10:00",
+      "fim": "2024-11-09 16:28:00",
+      "linhas_injetadas": 470
+    },
+    {
+      "id": 12,
+      "tipo": "exfiltracao",
+      "descricao": "Exportação em massa de relatórios por um único usuário",
+      "inicio": "2024-11-10 22:05:00",
+      "fim": "2024-11-10 22:20:00",
+      "linhas_injetadas": 388
+    }
+  ]
+}

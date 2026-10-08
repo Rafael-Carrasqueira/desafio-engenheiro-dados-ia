@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - alertas.yml
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # ai_service expõe as métricas da análise de logs com IA (modelo pull/scrape)
+  - job_name: ai_service
+    static_configs:
+      - targets: ["ai_service:8000"]

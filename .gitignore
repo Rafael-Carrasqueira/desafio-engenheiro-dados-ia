@@ -1,0 +1,18 @@
+# ambiente local
+.venv/
+__pycache__/
+*.pyc
+
+# dados gerados (reproduzíveis com: python ai_service/gerar_logs.py)
+ai_service/data/*
+!ai_service/data/.gitkeep
+!ai_service/data/incidentes.json
+
+# modelo treinado e relatórios (gerados pelo log_analyzer.py)
+ai_service/model/*
+!ai_service/model/.gitkeep
+ai_service/output/*
+!ai_service/output/.gitkeep
+
+# saída completa da etapa 3 (50 mil linhas; o print e o resumo ficam versionados)
+evidencias/etapa3_saida_completa.txt

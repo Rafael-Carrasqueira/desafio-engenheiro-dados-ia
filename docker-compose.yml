@@ -1,0 +1,114 @@
+# Ambiente de observabilidade com IA (Módulo 4 + Desafio Final, Etapa 4)
+#
+#   log_generator -> data/live.log -> ai_service (Isolation Forest + NLP) -> :8000/metrics
+#                                          |                                    |
+#                                          +-> db (Postgres: ai_incidentes)     +-> prometheus (scrape + alertas)
+#                                                                                         |
+#                                                                                      grafana (dashboards)
+#
+# Correções em relação ao compose do enunciado:
+#  - /data era um volume nomeado vazio (o app.log nunca chegava ao container) -> bind ./ai_service/data
+#  - o Dockerfile copiava o modelo para /app/model e o código lia /model -> modelo só por volume em /model
+#  - imagens com versão fixada; healthchecks; Grafana e Prometheus já provisionados
+
+name: observabilidade-ia
+
+x-ai-image: &ai-image
+  build: ./ai_service
+  image: observabilidade-ia/ai_service:1.0
+  environment: &ai-env
+    TZ: America/Sao_Paulo
+    LOG_FILE: /data/app.log
+    LIVE_LOG: /data/live.log
+    MODEL_FILE: /model/anomaly_model.pkl
+    OUTPUT_DIR: /output
+    DATABASE_URL: postgresql://admin:password@db:5432/logs
+  volumes:
+    - ./ai_service/data:/data
+    - ./ai_service/model:/model
+    - ./ai_service/output:/output
+  networks: [backend]
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      ai_service:
+        condition: service_healthy
+    networks: [backend]
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/ai_service.json
+      GF_USERS_DEFAULT_THEME: dark
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+      - db
+    ports:
+      - "3001:3000"
+    networks: [backend]
+
+  ai_service:
+    <<: *ai-image
+    command: ["python", "log_analyzer.py", "--serve"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/metrics')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 120s        # 1a subida: gera o app.log e treina o modelo
+
+  log_generator:
+    <<: *ai-image
+    command: ["python", "gerar_logs.py", "--live", "--saida", "/data/live.log",
+              "--linhas-por-min", "150", "--intervalo-incidente", "480"]
+    depends_on:
+      ai_service:
+        condition: service_healthy
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: logs
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d logs"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks: [backend]
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  db_data:

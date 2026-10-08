@@ -1,0 +1,7 @@
+Sensibilidade ao hiperparâmetro contamination do Isolation Forest por janela (mesmo app.log, retreino a cada valor)
+
+contamination=0.005 | INCIDENTES DETECTADOS (Isolation Forest por janela) - 9 incidentes | Recall: 75% (9/12) | Precisão: 100% | falsos positivos: 0 | causa correta: 9/12 | 
+contamination=0.01 | INCIDENTES DETECTADOS (Isolation Forest por janela) - 10 incidentes | Recall: 83% (10/12) | Precisão: 100% | falsos positivos: 0 | causa correta: 10/12 | 
+contamination=0.015 | INCIDENTES DETECTADOS (Isolation Forest por janela) - 12 incidentes | Recall: 100% (12/12) | Precisão: 100% | falsos positivos: 0 | causa correta: 12/12 | 10 alerta(s) isolado(s)
+contamination=0.02 | INCIDENTES DETECTADOS (Isolation Forest por janela) - 18 incidentes | Recall: 100% (12/12) | Precisão: 67% | falsos positivos: 6 | causa correta: 12/12 | 42 alerta(s) isolado(s)
+contamination=0.03 | INCIDENTES DETECTADOS (Isolation Forest por janela) - 28 incidentes | Recall: 100% (12/12) | Precisão: 43% | falsos positivos: 16 | causa correta: 12/12 | 113 alerta(s) isolado(s)
