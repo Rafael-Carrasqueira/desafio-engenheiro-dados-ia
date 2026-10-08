@@ -217,6 +217,27 @@ arquivo, pontua cada minuto com o modelo salvo e expõe as métricas.
 | `ai_log_latency_ms` | histogram | latência extraída das mensagens (p50/p95 com `histogram_quantile`) |
 | `ai_model` | info | versão e data de treino do modelo carregado |
 
+**Detecção ao vivo.** O `ai_service` usa o mesmo modelo treinado no lote, sem retreinar, para pontuar cada minuto
+que o `log_generator` escreve. Trecho real da primeira rodada, em que 3 incidentes foram injetados e 3 confirmados
+com a causa certa ([log completo](evidencias/etapa4_ai_service_live_rodada1.txt)):
+
+```
+[serve] modelo carregado de /model/anomaly_model.pkl (treinado em 2026-10-07T22:16:25)
+[serve] 22:21 linhas=  59 score=0.442 normal
+[serve] 22:22 linhas=  77 score=0.626 ANÔMALO
+[serve] 22:23 linhas=  77 score=0.641 ANÔMALO
+[serve] 22:24 linhas=  62 score=0.583 ANÔMALO
+[serve] INCIDENTE 22:22-22:25 exfiltracao: Exportação em massa de dados por um único usuário
+...
+[serve] 22:42 linhas=  37 score=0.630 ANÔMALO
+...
+[serve] INCIDENTE 22:42-22:46 admin_fora_horario: Ação administrativa sensível fora do horário comercial
+```
+
+Um incidente só é encerrado depois de 3 minutos normais seguidos. Por isso o gerador espaça os incidentes em 8
+minutos. Os contadores `ai_log_incidents_total{tipo}` nascem em zero para todos os tipos: sem isso, o primeiro
+incidente de cada tipo cria a série já valendo 1, e `increase()` não o enxerga.
+
 **Alertas** ([prometheus/alertas.yml](prometheus/alertas.yml)): `AiServiceFora`, `AnomaliaDeLogDetectada`,
 `IncidenteConfirmado` e `PossivelForcaBruta`.
 
@@ -225,6 +246,12 @@ arquivo, pontua cada minuto com o modelo salvo e expõe as métricas.
 | Prometheus: targets | Prometheus: alertas |
 |---|---|
 | ![targets](evidencias/06_prometheus_targets.png) | ![alertas](evidencias/07_prometheus_alertas.png) |
+
+As telas acima foram capturadas na segunda rodada ao vivo ([log](evidencias/etapa4_ai_service_live_rodada2.txt)),
+durante um incidente `admin_fora_horario` em andamento e logo depois de uma exfiltração confirmada. A tabela
+do Postgres reúne os incidentes do lote (2024) e os ao vivo (2026). Mais telas:
+[PromQL](evidencias/08_prometheus_promql.png) · [/metrics](evidencias/09_ai_service_metrics.png) ·
+[docker compose ps](evidencias/10_docker_compose_ps.png).
 
 Persistência do modelo: a 2ª execução carrega o `.pkl` em vez de treinar.
 

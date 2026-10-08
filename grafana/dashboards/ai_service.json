@@ -407,7 +407,8 @@
             "mode": "palette-classic"
           },
           "min": 0,
-          "decimals": 0
+          "decimals": 0,
+          "displayName": "${__field.labels.tipo}"
         },
         "overrides": []
       },
@@ -855,7 +856,7 @@
           "format": "table",
           "rawQuery": true,
           "editorMode": "code",
-          "rawSql": "SELECT origem, inicio, fim, tipo, hipotese, round(score::numeric, 3) AS score, linhas, erros FROM ai_incidentes ORDER BY registrado_em DESC, inicio DESC LIMIT 25"
+          "rawSql": "SELECT origem, to_char(inicio, 'YYYY-MM-DD HH24:MI') AS inicio, to_char(fim, 'HH24:MI') AS fim, tipo, hipotese, round(score::numeric, 3) AS score, linhas, erros FROM ai_incidentes ORDER BY registrado_em DESC, ai_incidentes.inicio DESC LIMIT 25"
         }
       ],
       "fieldConfig": {

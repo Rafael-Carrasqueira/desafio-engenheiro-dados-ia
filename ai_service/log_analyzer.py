@@ -735,6 +735,15 @@ def servir(live_log: Path, porta: int, retrain: bool) -> None:
     m_info.info({"versao": bundle["versao"], "treinado_em": bundle["treinado_em"],
                  "linhas_treino": str(bundle["linhas_treino"]), "sklearn": bundle["sklearn"]})
     m_limiar.set(-bundle["modelo_janela"].offset_)
+    # séries nascem em 0: sem isso, increase()/rate() não enxergam o primeiro incidente de cada tipo
+    for tipo, *_ in REGRAS_CAUSA:
+        m_inc.labels(tipo)
+    for lv in LEVELS:
+        m_linhas.labels(lv)
+    for origem in ("externa", "interna"):
+        m_falhas.labels(origem)
+    for rotulo in bundle["rotulos"].values():
+        m_cat.labels(rotulo)
 
     start_http_server(porta)
     print(f"[serve] métricas em http://0.0.0.0:{porta}/metrics | acompanhando {live_log}", flush=True)

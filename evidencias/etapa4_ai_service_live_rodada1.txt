@@ -1,0 +1,43 @@
+[serve] modelo carregado de /model/anomaly_model.pkl (treinado em 2026-10-07T22:16:25)
+[serve] métricas em http://0.0.0.0:8000/metrics | acompanhando /data/live.log
+[serve] 22:17 linhas=  23 score=0.484 normal
+[serve] 22:18 linhas=  61 score=0.389 normal
+[serve] 22:19 linhas=  64 score=0.501 normal
+[serve] 22:20 linhas=  60 score=0.426 normal
+[serve] 22:21 linhas=  59 score=0.442 normal
+[serve] 22:22 linhas=  77 score=0.626 ANÔMALO
+[serve] 22:23 linhas=  77 score=0.641 ANÔMALO
+[serve] 22:24 linhas=  62 score=0.583 ANÔMALO
+[serve] 22:25 linhas=  57 score=0.377 normal
+[serve] 22:26 linhas=  50 score=0.438 normal
+[serve] 22:27 linhas=  52 score=0.424 normal
+[serve] INCIDENTE 22:22-22:25 exfiltracao: Exportação em massa de dados por um único usuário
+1 incidente(s) gravado(s) no Postgres (ai_incidentes, origem=live)
+[serve] 22:28 linhas=  61 score=0.445 normal
+[serve] 22:29 linhas=  56 score=0.457 normal
+[serve] 22:30 linhas=  56 score=0.430 normal
+[serve] 22:31 linhas=  52 score=0.459 normal
+[serve] 22:32 linhas=  47 score=0.455 normal
+[serve] 22:33 linhas=  71 score=0.579 ANÔMALO
+[serve] 22:34 linhas=  79 score=0.625 ANÔMALO
+[serve] 22:35 linhas=  83 score=0.631 ANÔMALO
+[serve] 22:36 linhas=  42 score=0.406 normal
+[serve] 22:37 linhas=  38 score=0.509 normal
+[serve] 22:38 linhas=  48 score=0.493 normal
+[serve] INCIDENTE 22:33-22:36 exfiltracao: Exportação em massa de dados por um único usuário
+1 incidente(s) gravado(s) no Postgres (ai_incidentes, origem=live)
+[serve] 22:39 linhas=  40 score=0.449 normal
+[serve] 22:40 linhas=  42 score=0.469 normal
+[serve] 22:41 linhas=  47 score=0.490 normal
+[serve] 22:42 linhas=  37 score=0.630 ANÔMALO
+[serve] 22:43 linhas=  56 score=0.593 ANÔMALO
+[serve] 22:44 linhas=  51 score=0.636 ANÔMALO
+[serve] 22:45 linhas=  39 score=0.634 ANÔMALO
+[serve] 22:46 linhas=  44 score=0.485 normal
+[serve] 22:47 linhas=  40 score=0.480 normal
+[serve] 22:48 linhas=  33 score=0.480 normal
+/app/log_analyzer.py:790: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+  dfi = pd.concat([h[1] for h in janelas], ignore_index=True)
+[serve] INCIDENTE 22:42-22:46 admin_fora_horario: Ação administrativa sensível fora do horário comercial
+1 incidente(s) gravado(s) no Postgres (ai_incidentes, origem=live)
+[serve] 22:49 linhas=  65 score=0.585 ANÔMALO

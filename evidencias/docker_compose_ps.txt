@@ -1,0 +1,6 @@
+SERVICE         STATUS                    PORTS
+ai_service      Up 19 minutes (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+db              Up 57 minutes (healthy)   5432/tcp
+grafana         Up 56 minutes             0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+log_generator   Up 19 minutes             8000/tcp
+prometheus      Up 56 minutes             0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
